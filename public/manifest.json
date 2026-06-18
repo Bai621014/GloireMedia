@@ -1,0 +1,23 @@
+{
+  "name": "GloireMedia V10",
+  "short_name": "GloireMedia",
+  "description": "Le TikTok Africain - Gagne des commissions en créant du contenu positif",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0A2AFF",
+  "theme_color": "#FFD700",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
