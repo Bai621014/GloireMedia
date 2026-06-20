@@ -12,15 +12,15 @@ GloireMedia V10 est une plateforme mobile de partage de vidéos et de diffusions
 * **🙏 Gloire-Direct (Live Streaming) :** Intégration du **SDK Agora Audio/Video** pour suivre les moments de prière, d'intercession et d'édification (ex: flux en direct de Pasteur Chris) même à bas débit.
 * **💳 Système de Commissions & Retrait Local :** Un portefeuille numérique intégré permettant de convertir vos jetons d'activité (`V10`) directement en Cash via **MTN MoMo**, **Orange Money** ou en **Crédit de communication**.
 * **🛍️ Espace Publicitaire & Marketplace :** Un marché communautaire alimenté par Supabase pour booster vos propres affaires ou acheter des offres exclusives en utilisant vos gains.
-* **⚡ Mode Hors-Ligne & Optimisation 3G :** Service Worker configuré pour mettre en cache les ressources essentielles et économiser les données mobiles.
+* **⚡ Mode Hors-Ligne & Optimisation 3G :** Service Worker configuré avec la stratégie *Stale-While-Revalidate* pour économiser les données mobiles tout en garantissant des mises à jour transparentes.
 
 ---
 
 ## 🛠️ Stack Technique
 
-* **Framework Frontend :** Next.js 14+ (App Router, `'use client'`)
+* **Framework Frontend :** Next.js 14+ (Pages/App Router Architecture)
 * **Styles :** Tailwind CSS (Design Sombre / Premium Black & Gold)
-* **Backend & Base de données :** Supabase (Authentification, profils, retraits, marketplace)
+* **Backend & Base de données :** Supabase (Authentification, profils, retraits sécurisés par transactions RPC, marketplace)
 * **Live Streaming :** Agora Web SDK
 * **Stockage Médias :** Cloudinary
 * **PWA :** Service Workers natifs pour la gestion du cache et manifeste d'application mobile (`manifest.json`).
@@ -29,11 +29,10 @@ GloireMedia V10 est une plateforme mobile de partage de vidéos et de diffusions
 
 ## 📦 Structure du Projet (Extraits)
 
-* `manifest.json` : Configuration PWA avec gestion des couleurs thématiques (`#0A2AFF`, `#FFD700`).
-* `sw.js` : Stratégie *Cache-First* pour les assets statiques, avec contournement automatique pour les requêtes dynamiques (Supabase & Cloudinary).
-* `app/live/page.js` : Page interactive des flux en direct connectée à Agora.
-* `app/retrait/page.js` : Formulaire de demande de virement mobile (MTN/Orange) avec synchronisation en temps réel du solde utilisateur.
-* `app/market/page.js` : Vitrine des annonces actives récupérées dynamiquement depuis Supabase.
+* `public/manifest.json` : Configuration PWA avec gestion des couleurs thématiques premium (`#000000`, `#FFD700`).
+* `public/sw.js` : Stratégie *Stale-While-Revalidate* pour les assets de base, avec contournement automatique sécurisé pour les requêtes dynamiques (Supabase & Cloudinary).
+* `services/walletService.js` : Module de gestion et conversion des devises locales (XAF, XOF, CDF, USD) avec arrondis monétaires stricts.
+* `pages/api/wallet/withdraw.js` : API de retrait sécurisée, protégée contre les attaques de type Race Condition grâce aux transactions PostgreSQL.
 
 ---
 
