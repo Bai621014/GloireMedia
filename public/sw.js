@@ -11,7 +11,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS_TO_CACHE);
-    })
+    }).then(() => self.skipWaiting()) // Force le SW à s'activer sans attendre
   );
 });
 
@@ -26,23 +26,36 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim()) // Prend le contrôle immédiat des pages
   );
 });
 
-// 3. Stratégie de Cache : Charger depuis le cache d'abord pour économiser la 3G
+// 3. Stratégie de Cache Intelligente : Économie de 3G + Mises à jour garanties
 self.addEventListener('fetch', (event) => {
-  // Ne pas mettre en cache les requêtes de base de données (Supabase) ou Cloudinary
+  // Sécurité : Ne pas interférer avec les requêtes de base de données (Supabase) ou Cloudinary
   if (event.request.url.includes('supabase.co') || event.request.url.includes('cloudinary.com')) {
-    return event.respondWith(fetch(event.request));
+    return;
   }
+
+  // Uniquement pour les requêtes de type GET (le cache ne supporte pas POST/PUT)
+  if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request);
+      // Stratégie Stale-While-Revalidate : Vitesse maximale + mise à jour en arrière-plan
+      const fetchPromise = fetch(event.request).then((networkResponse) => {
+        // Si la réponse réseau est valide, on met à jour le cache
+        if (networkResponse && networkResponse.status === 200) {
+          const cacheCopy = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cacheCopy));
+        }
+        return networkResponse;
+      }).catch(() => {
+        // Gestion silencieuse des pannes réseau
+      });
+
+      // Renvoie la version en cache immédiatement si elle existe, sinon attend le réseau
+      return cachedResponse || fetchPromise;
     })
   );
 });
