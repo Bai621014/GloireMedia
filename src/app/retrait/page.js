@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
+import supabase from '../../../lib/supabase' // Correction du chemin d'accès à 3 niveaux
 
 export default function RetraitPage() {
   const [balance, setBalance] = useState(0)
@@ -14,7 +14,6 @@ export default function RetraitPage() {
     async function loadUserBalance() {
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
-        // Récupération du solde depuis le profil utilisateur
         const { data } = await supabase
           .from('profiles')
           .select('balance_tokens')
@@ -44,8 +43,9 @@ export default function RetraitPage() {
     
     try {
       const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) throw new Error("Utilisateur non connecté.")
       
-      // Enregistrement de la demande de retrait pour traitement par l'API Monetbil/Crypto-Fiat
+      // Enregistrement de la demande de retrait
       const { error } = await supabase.from('withdrawals').insert({
         user_id: session.user.id,
         amount: parseFloat(amount),
@@ -56,7 +56,7 @@ export default function RetraitPage() {
 
       if (error) throw error
 
-      // Mise à jour locale immédiate du solde pour l'expérience utilisateur
+      // Optimisation de l'affichage local du solde
       setBalance(prev => prev - parseFloat(amount))
       setMessage('✅ Demande de transfert envoyée avec succès ! Traitement en cours via Mobile Money.')
       setAmount('')
@@ -91,6 +91,7 @@ export default function RetraitPage() {
           >
             <option value="MTN">MTN MoMo</option>
             <option value="Orange">Orange Money</option>
+            <option value="Moov">Moov Money / Airtel</option>
             <option value="Credit">Crédit de Communication</option>
           </select>
         </div>
@@ -99,7 +100,7 @@ export default function RetraitPage() {
           <label className="block text-xs font-bold text-gray-400 mb-2">2. Numéro de téléphone</label>
           <input 
             type="tel"
-            placeholder="Ex: 6xxxxxxxx"
+            placeholder="Ex: +235xxxxxxxx"
             value={phoneNumber}
             onChange={e => setPhoneNumber(e.target.value)}
             className="w-full bg-gray-900 rounded-xl p-3 text-sm outline-none border border-gray-800 text-white"
@@ -133,4 +134,4 @@ export default function RetraitPage() {
       </form>
     </div>
   )
-      }
+        }
