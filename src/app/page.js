@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
+import supabase from '../../lib/supabase' // Chemin corrigé (2 niveaux) et import par défaut
 import VideoCard from '../components/VideoCard'
 import Link from 'next/link'
 
@@ -15,7 +15,7 @@ export default function Home() {
       setUser(session?.user || null)
     })
 
-    // 2. Chargement des vidéos publiées (publicités, partages, témoignages)
+    // 2. Chargement des vidéos publiées
     async function fetchVideos() {
       const { data, error } = await supabase
         .from('videos')
@@ -74,4 +74,4 @@ export default function Home() {
       </nav>
     </div>
   )
-        }
+    }
