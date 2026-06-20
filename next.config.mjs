@@ -1,16 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: false, // <-- On ajoute cette ligne pour débloquer StackBlitz !
+  swcMinify: false, // Débloque StackBlitz sans faire planter le build
   
-  // Permet de déployer sur Vercel/Render même s'il reste de petites alertes de code
+  // Ignore les petites alertes pour fluidifier le déploiement
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Autoriser le chargement des images et avatars depuis ton stockage Supabase
+  
+  // Autoriser le chargement des images/médias depuis tes serveurs distants
   images: {
     remotePatterns: [
       {
@@ -18,6 +19,12 @@ const nextConfig = {
         hostname: '*.supabase.co',
         port: '',
         pathname: '/storage/v1/object/public/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/**',
       },
     ],
   },
