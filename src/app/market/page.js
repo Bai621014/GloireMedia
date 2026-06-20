@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { supabase } from '../../lib/supabase'
+import supabase from '../../../lib/supabase' // Chemin d'importation corrigé à 3 niveaux
 
 export default function Market() {
   const [ads, setAds] = useState([])
@@ -24,12 +24,12 @@ export default function Market() {
   }, [])
 
   return (
-    <div className="p-4 bg-black text-white min-h-screen pb-24">
+    <div className="p-4 bg-black text-white min-h-screen pb-24 max-w-md mx-auto">
       {/* En-tête de la boutique */}
       <h1 className="text-2xl font-bold text-yellow-400 mb-1">🛍️ Espace Publicitaire & Ventes</h1>
       <p className="text-xs text-gray-400 mb-6">Utilisez vos commissions accumulées comme carburant pour booster vos affaires ou acquérir des offres.</p>
 
-      {/* Affichage des annonces */}
+      {/* Affichage des annonces en grille responsive mobile */}
       {loading ? (
         <div className="text-center text-gray-500 text-sm py-10">Mise à jour de la boutique...</div>
       ) : ads.length === 0 ? (
@@ -54,7 +54,7 @@ export default function Market() {
                 <span className="text-xs text-green-400 font-bold block mb-2">
                   💰 {ad.price_tokens} Commissions V10
                 </span>
-                <button className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-xs py-2 rounded-lg transition-colors active:scale-95">
+                <button className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-xs py-2 rounded-lg transition-colors scale-activate">
                   Voir l'offre
                 </button>
               </div>
@@ -64,4 +64,4 @@ export default function Market() {
       )}
     </div>
   )
-    }
+        }
