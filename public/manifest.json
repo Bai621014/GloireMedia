@@ -8,6 +8,7 @@
   "orientation": "portrait-primary",
   "background_color": "#000000",
   "theme_color": "#FFD700",
+  "categories": ["social", "entertainment", "finance"],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -26,6 +27,15 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Découvrez le TikTok Africain"
     }
   ]
 }
