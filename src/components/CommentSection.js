@@ -5,11 +5,11 @@ import supabase from '../lib/supabase'
 // 🌟 Liste Sainte & Riche étendue : Émojis de Joie, Respect, Abondance et Éléments de Style
 const POSITIVE_EMOJIS = [
   // Atmosphère spirituelle & Respect
-  '🙏', '🙌', '✨', '🔥', '👑', '🕊️', '📖', '🌟', '🕊️',
+  '🙏', '🙌', '✨', '🔥', '👑', '🕊️', '📖', '🌟',
   // Marques de respect, salutation & honneur
   '👏', '🤝', '🙇‍♂️', '🙇‍♀️', '👍', '✊', '👋', '✍️', '✏️',
   // Joie éclatante, éclats de rire & amour céleste (Cœurs multi-couleurs)
-  '😂', '🤣', '😀', '🥰', '😁', '❤️', 's❤️', '🎉', '🥳', '☀️', '💙', '💜', '💚', '💛',
+  '😂', '🤣', '😀', '🥰', '😁', '❤️', '🎉', '🥳', '☀️', '💙', '💜', '💚', '💛',
   // Signes d'abondance, bénédiction financière & réussite (Commissions V10)
   '💸', '💰', '💵', '💲', '📈', '🚀', '🎯', '💪', '🏦', '👇🏻', '👆🏻'
 ];
@@ -94,12 +94,22 @@ export default function CommentSection({ videoId, user }) {
         <h3 className="font-bold text-sm tracking-wide text-yellow-400 flex items-center gap-2">
           💬 Flux d'Édification & de Grâce
         </h3>
-        <div className="flex items-center space-x-2">
-          {/* 🟢 Feu vert clignotant animé en Tailwind CSS */}
-          <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-          </span>
+        <div className="flex items-center space-x-3">
+          {/* 🚦 Zone des voyants animés */}
+          <div className="flex space-x-1.5 items-center bg-gray-900/60 px-2 py-1 rounded-full border border-gray-800">
+            {/* 🟢 Feu vert clignotant */}
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            
+            {/* 🔴 Feu rouge clignotant ajouté */}
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+            </span>
+          </div>
+
           <span className="text-[10px] bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded-full font-medium">
             Actif : +0.5 V10 💸
           </span>
@@ -153,4 +163,4 @@ export default function CommentSection({ videoId, user }) {
       </div>
     </div>
   )
-          }
+      }
