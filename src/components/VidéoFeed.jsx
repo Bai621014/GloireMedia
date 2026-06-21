@@ -12,6 +12,7 @@ function VidéoCard({ vidéo, user, isActive }) {
   const [showComments, setShowComments] = useState(false)
 
   useEffect(() => {
+    // .current, .play() et .pause() sont natifs, pas d'accent après le point !
     if (vidéoRef.current) {
       if (isActive) {
         vidéoRef.current.play().catch((err) => console.log("Lecture bloquée :", err))
@@ -49,7 +50,7 @@ function VidéoCard({ vidéo, user, isActive }) {
 
   return (
     <div className="relative w-full h-full max-w-md mx-auto bg-black flex flex-col justify-center items-center snap-start">
-      {/* 🎯 FIX RENDER : La balise HTML doit rester strictement <video> sans accent */}
+      {/* La balise HTML standard doit rester strictement <video> sans accent */}
       <video
         ref={vidéoRef}
         onClick={handleVidéoClick}
@@ -134,7 +135,7 @@ export default function VidéoFeed({ user }) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          {/* 🎯 FIX RENDER : Le sélecteur d'attribut HTML doit rester sans accent */}
+          // L'attribut HTML data-video-id reste au format d'origine sans accent
           const vidéoId = entry.target.getAttribute('data-video-id')
           setActiveVidéoId(vidéoId)
         }
@@ -185,4 +186,4 @@ export default function VidéoFeed({ user }) {
       ))}
     </div>
   )
-      }
+        }
