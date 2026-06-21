@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+'use client'
+import React, { useState, useEffect } from 'react'; // 🎯 CORRECTION : "import" tout en minuscules
 
 export default function OTPVerification({ numeroTelephone, onVerificationSuccess }) {
   const [step, setStep] = useState(1); // 1: Demande, 2: Saisie du code
@@ -71,7 +72,7 @@ export default function OTPVerification({ numeroTelephone, onVerificationSuccess
       if (data.success) {
         setMessage({ type: 'success', text: 'Numéro de téléphone vérifié avec succès !' });
         if (onVerificationSuccess) {
-          onVerificationSuccess(); // Déclenche l'action de suite (ex: validation finale)
+          onVerificationSuccess(); // Déclenche l'action de suite
         }
       } else {
         setMessage({ type: 'error', text: data.message || "Code incorrect ou expiré." });
@@ -146,4 +147,4 @@ export default function OTPVerification({ numeroTelephone, onVerificationSuccess
       )}
     </div>
   );
-                }
+}
