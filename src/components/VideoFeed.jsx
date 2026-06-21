@@ -1,6 +1,6 @@
 'use client'
 import { useRef, useState, useEffect } from 'react'
-import supabase from '../lib/supabase'
+import supabase from '@/lib/supabase' // 🎯 CORRECTION : Utilisation de l'alias absolu pour sécuriser Supabase
 import CommentSection from './CommentSection'
 
 function VideoCard({ video, user, isActive }) {
@@ -177,4 +177,4 @@ export default function VideoFeed({ user }) {
       ))}
     </div>
   )
-  }
+        }
