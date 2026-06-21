@@ -2,16 +2,16 @@
 import { useState, useEffect } from 'react'
 import supabase from '../lib/supabase'
 
-// 🌟 Liste Sainte & Riche : Émojis de Joie, Célébration, Respect, Miracle et Abondance Financière
+// 🌟 Liste Sainte & Riche étendue : Émojis de Joie, Respect, Abondance et Éléments de Style
 const POSITIVE_EMOJIS = [
   // Atmosphère spirituelle & Respect
-  '🙏', '🙌', '✨', '🔥', '👑', '🕊️', '📖', '🌟',
+  '🙏', '🙌', '✨', '🔥', '👑', '🕊️', '📖', '🌟', '🕊️',
   // Marques de respect, salutation & honneur
-  '👏', '🤝', '🙇‍♂️', '🙇‍♀️',
-  // Joie éclatante, éclats de rire & amour céleste
-  '😂', '🤣', '😀', '🥰', '❤️', 's❤️', '🎉', '🥳', '☀️',
+  '👏', '🤝', '🙇‍♂️', '🙇‍♀️', '👍', '✊', '👋', '✍️', '✏️',
+  // Joie éclatante, éclats de rire & amour céleste (Cœurs multi-couleurs)
+  '😂', '🤣', '😀', '🥰', '😁', '❤️', 's❤️', '🎉', '🥳', '☀️', '💙', '💜', '💚', '💛',
   // Signes d'abondance, bénédiction financière & réussite (Commissions V10)
-  '💸', '💰', '💵', '💲', '📈', '🚀', '🎯', '💪'
+  '💸', '💰', '💵', '💲', '📈', '🚀', '🎯', '💪', '🏦', '👇🏻', '👆🏻'
 ];
 
 // 🛑 Mots strictement interdits (Filtre de négativité)
@@ -57,7 +57,7 @@ export default function CommentSection({ videoId, user }) {
     const hasForbiddenEmoji = extractedEmojis.some(emoji => !POSITIVE_EMOJIS.includes(emoji))
     
     if (hasForbiddenEmoji) {
-      return alert('⚠️ S\'il vous plaît, utilisez exclusivement les émojis de joie (😂, 🤣), d\'abondance (💸, 💰) ou de profond respect (🙏, 👏).')
+      return alert('⚠️ S\'il vous plaît, utilisez exclusivement les émojis de joie, d\'abondance ou de profond respect autorisés.')
     }
 
     try {
@@ -94,9 +94,16 @@ export default function CommentSection({ videoId, user }) {
         <h3 className="font-bold text-sm tracking-wide text-yellow-400 flex items-center gap-2">
           💬 Flux d'Édification & de Grâce
         </h3>
-        <span className="text-[10px] bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded-full font-medium">
-          Actif : +0.5 V10 💸
-        </span>
+        <div className="flex items-center space-x-2">
+          {/* 🟢 Feu vert clignotant animé en Tailwind CSS */}
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+          </span>
+          <span className="text-[10px] bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded-full font-medium">
+            Actif : +0.5 V10 💸
+          </span>
+        </div>
       </div>
       
       {/* Formulaire d'envoi premium */}
@@ -146,4 +153,4 @@ export default function CommentSection({ videoId, user }) {
       </div>
     </div>
   )
-    }
+          }
