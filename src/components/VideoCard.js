@@ -1,5 +1,6 @@
 'use client'
 import { useRef, useState, useEffect } from 'react'
+import supabase from '../lib/supabase' // ✨ AJOUT DE L'IMPORT MANQUANT ICI
 import CommentSection from './CommentSection'
 
 // Ajout de la prop "isActive" reçue du parent VideoFeed
@@ -37,8 +38,8 @@ export default function VideoCard({ video, user, isActive }) {
   const handlePlayStarted = async () => {
     setIsPlaying(true)
     try {
-      // Appel à votre procédure Supabase RPC
-      if (typeof supabase !== 'undefined') {
+      // L'appel fonctionne maintenant de manière sécurisée grâce à l'import
+      if (supabase) {
         await supabase.rpc('increment_views', { target_video_id: video.id })
       }
     } catch (err) {
@@ -93,4 +94,4 @@ export default function VideoCard({ video, user, isActive }) {
       )}
     </div>
   )
-  }
+          }
