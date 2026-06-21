@@ -12,7 +12,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Création du client unique pour tout l'écosystème GloireMedia
-// Le repli sur des chaînes de texte évite un plantage bloquant lors de la compilation
 const supabase = createClient(
   supabaseUrl || 'https://placeholder-project.supabase.co',
   supabaseAnonKey || 'placeholder-anon-key'
