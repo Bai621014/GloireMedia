@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useRef, useEffect } from 'react';
-import VideoCard from './VideoCard';
+import VideoCard from './VideoCard'; // L'import est propre ici
 
 // Exemple de données de test (en attendant de lier Supabase ici)
 const feedData = [
@@ -42,7 +42,8 @@ export default function VideoFeed({ user }) {
 
     const observer = new IntersectionObserver(handleIntersection, observerOptions);
 
-    const currentCards = cardRefs.current;
+    // Copie locale pour éviter les avertissements de nettoyage d'effet
+    const currentCards = [...cardRefs.current];
     currentCards.forEach((cardWrapper) => {
       if (cardWrapper) observer.observe(cardWrapper);
     });
@@ -76,4 +77,4 @@ export default function VideoFeed({ user }) {
       ))}
     </div>
   );
-            }
+}
