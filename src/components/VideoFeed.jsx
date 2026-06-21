@@ -1,6 +1,7 @@
 'use client'
 import { useRef, useState, useEffect } from 'react'
-import supabase from '@/lib/supabase' // 🎯 CORRECTION : Utilisation de l'alias absolu pour sécuriser Supabase
+// 🎯 CORRECTION CHEMIN : Utilisation du chemin relatif direct sans alias
+import supabase from '../lib/supabase' 
 import CommentSection from './CommentSection'
 
 function VideoCard({ video, user, isActive }) {
@@ -98,6 +99,7 @@ export default function VideoFeed({ user }) {
 
   useEffect(() => {
     async function fetchVideos() {
+      if (!supabase) return
       const { data, error } = await supabase
         .from('videos')
         .select('*, profiles(username, avatar_url)')
@@ -177,4 +179,4 @@ export default function VideoFeed({ user }) {
       ))}
     </div>
   )
-        }
+      }
