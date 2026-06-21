@@ -3,31 +3,31 @@ import { useRef, useState, useEffect } from 'react'
 import supabase from '../lib/supabase'
 import CommentSection from './CommentSection'
 
-function VidéoCard({ vidéo, user, isActive }) {
-  const vidéoRef = useRef(null)
+function VideoCard({ video, user, isActive }) {
+  const videoRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [showComments, setShowComments] = useState(false)
 
   useEffect(() => {
-    if (vidéoRef.current) {
+    if (videoRef.current) {
       if (isActive) {
-        vidéoRef.current.play().catch((err) => console.log("Lecture bloquée :", err))
+        videoRef.current.play().catch((err) => console.log("Lecture bloquée :", err))
         setIsPlaying(true)
       } else {
-        vidéoRef.current.pause()
-        vidéoRef.current.currentTime = 0
+        videoRef.current.pause()
+        videoRef.current.currentTime = 0
         setIsPlaying(false)
       }
     }
   }, [isActive])
 
-  const handleVidéoClick = () => {
-    if (vidéoRef.current) {
+  const handleVideoClick = () => {
+    if (videoRef.current) {
       if (isPlaying) {
-        vidéoRef.current.pause()
+        videoRef.current.pause()
         setIsPlaying(false)
       } else {
-        vidéoRef.current.play()
+        videoRef.current.play()
         setIsPlaying(true)
       }
     }
@@ -37,7 +37,7 @@ function VidéoCard({ vidéo, user, isActive }) {
     setIsPlaying(true)
     try {
       if (supabase) {
-        await supabase.rpc('increment_views', { target_video_id: vidéo.id })
+        await supabase.rpc('increment_views', { target_video_id: video.id })
       }
     } catch (err) {
       console.error("Erreur de vue:", err.message)
@@ -47,21 +47,21 @@ function VidéoCard({ vidéo, user, isActive }) {
   return (
     <div className="relative w-full h-full max-w-md mx-auto bg-black flex flex-col justify-center items-center snap-start">
       <video
-        ref={vidéoRef}
-        onClick={handleVidéoClick}
+        ref={videoRef}
+        onClick={handleVideoClick}
         onPlay={handlePlayStarted}
         onPause={() => setIsPlaying(false)}
-        src={vidéo.video_url || vidéo.vidéo_url}
+        src={video.video_url}
         className="w-full h-[calc(100vh-130px)] object-cover rounded-xl"
         loop
         playsInline
       />
 
       <div className="absolute bottom-6 left-4 z-10 text-white right-16 pointer-events-none">
-        <p className="font-bold text-sm text-yellow-400">@{vidéo.profiles?.username || 'Créateur'}</p>
-        <p className="text-xs mt-1 drop-shadow-md">{vidéo.title}</p>
+        <p className="font-bold text-sm text-yellow-400">@{video.profiles?.username || 'Créateur'}</p>
+        <p className="text-xs mt-1 drop-shadow-md">{video.title}</p>
         <div className="flex items-center space-x-1 mt-2 text-[10px] text-gray-300 bg-black/40 px-2 py-1 rounded-full w-max">
-          <span>👁️</span> <span>{vidéo.views || 0} vues</span>
+          <span>👁️</span> <span>{video.views || 0} vues</span>
         </div>
       </div>
 
@@ -82,7 +82,7 @@ function VidéoCard({ vidéo, user, isActive }) {
             </button>
           </div>
           <div className="flex-1 overflow-y-auto no-scrollbar">
-            <CommentSection videoId={vidéo.id} user={user} />
+            <CommentSection videoId={video.id} user={user} />
           </div>
         </div>
       )}
@@ -90,33 +90,33 @@ function VidéoCard({ vidéo, user, isActive }) {
   )
 }
 
-export default function VidéoFeed({ user }) {
-  const [vidéos, setVidéos] = useState([])
-  const [activeVidéoId, setActiveVidéoId] = useState(null)
+export default function VideoFeed({ user }) {
+  const [videos, setVideos] = useState([])
+  const [activeVideoId, setActiveVideoId] = useState(null)
   const [loading, setLoading] = useState(true)
   const containerRef = useRef(null)
 
   useEffect(() => {
-    async function fetchVidéos() {
+    async function fetchVideos() {
       const { data, error } = await supabase
         .from('videos')
         .select('*, profiles(username, avatar_url)')
         .order('created_at', { ascending: false })
       
       if (!error && data) {
-        setVidéos(data)
+        setVideos(data)
         if (data.length > 0) {
-          setActiveVidéoId(data[0].id.toString())
+          setActiveVideoId(data[0].id.toString())
         }
       }
       setLoading(false)
     }
-    fetchVidéos()
+    fetchVideos()
   }, [])
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container || vidéos.length === 0) return
+    if (!container || videos.length === 0) return
 
     const options = {
       root: container,
@@ -128,7 +128,7 @@ export default function VidéoFeed({ user }) {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           const vId = entry.target.getAttribute('data-video-id')
-          setActiveVidéoId(vId)
+          setActiveVideoId(vId)
         }
       })
     }, options)
@@ -139,7 +139,7 @@ export default function VidéoFeed({ user }) {
     return () => {
       children.forEach((child) => observer.unobserve(child))
     }
-  }, [vidéos])
+  }, [videos])
 
   if (loading) {
     return (
@@ -149,7 +149,7 @@ export default function VidéoFeed({ user }) {
     )
   }
 
-  if (vidéos.length === 0) {
+  if (videos.length === 0) {
     return (
       <div className="flex items-center justify-center h-[70vh] text-sm text-gray-500 px-6 text-center">
         Aucune bénédiction vidéo disponible pour le moment.
@@ -162,19 +162,19 @@ export default function VidéoFeed({ user }) {
       ref={containerRef}
       className="snap-y snap-mandatory h-[calc(100vh-130px)] overflow-y-scroll no-scrollbar w-full"
     >
-      {vidéos.map((vidéo) => (
+      {videos.map((video) => (
         <div 
-          key={vidéo.id} 
-          data-video-id={vidéo.id}
+          key={video.id} 
+          data-video-id={video.id}
           className="h-full w-full flex items-center justify-center border-b border-gray-950 snap-start"
         >
-          <VidéoCard 
-            vidéo={vidéo} 
+          <VideoCard 
+            video={video} 
             user={user} 
-            isActive={activeVidéoId === vidéo.id.toString()} 
+            isActive={activeVideoId === video.id.toString()} 
           />
         </div>
       ))}
     </div>
   )
-            }
+  }
