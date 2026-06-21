@@ -1,7 +1,7 @@
 'use client'
 import { useRef, useState, useEffect } from 'react'
 import supabase from '../lib/supabase' 
-import CommentSection from './CommentSection.jsx' // 🎯 CORRECTION : Ajout explicite de l'extension .jsx
+import CommentSection from './CommentSection' // 🎯 CORRECTION : Plus d'extension explicite ici !
 
 export default function VideoCard({ video, user, isActive }) {
   const videoRef = useRef(null)
@@ -92,4 +92,4 @@ export default function VideoCard({ video, user, isActive }) {
       )}
     </div>
   )
-        }
+  }
