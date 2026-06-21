@@ -3,9 +3,6 @@ import { useRef, useState, useEffect } from 'react'
 import supabase from '../lib/supabase'
 import CommentSection from './CommentSection'
 
-// ==========================================
-// 1. SOUS-COMPOSANT : CARTE VIDÉO INDIVIDUELLE
-// ==========================================
 function VidéoCard({ vidéo, user, isActive }) {
   const vidéoRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
@@ -93,9 +90,6 @@ function VidéoCard({ vidéo, user, isActive }) {
   )
 }
 
-// ==========================================
-// 2. COMPOSANT PRINCIPAL : LE FLUX (FEED)
-// ==========================================
 export default function VidéoFeed({ user }) {
   const [vidéos, setVidéos] = useState([])
   const [activeVidéoId, setActiveVidéoId] = useState(null)
@@ -133,8 +127,8 @@ export default function VidéoFeed({ user }) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          const vidéoId = entry.target.getAttribute('data-video-id')
-          setActiveVidéoId(vidéoId)
+          const vId = entry.target.getAttribute('data-video-id')
+          setActiveVidéoId(vId)
         }
       })
     }, options)
@@ -183,4 +177,4 @@ export default function VidéoFeed({ user }) {
       ))}
     </div>
   )
-      }
+            }
