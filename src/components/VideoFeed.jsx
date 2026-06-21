@@ -85,7 +85,7 @@ function VideoCard({ video, user, isActive }) {
             </button>
           </div>
           <div className="flex-1 overflow-y-auto no-scrollbar">
-            {/* 🎯 CORRECTION : On passe correctement la variable user ici */}
+            {/* 🎯 CORRECTION ICI : On ajoute user={user} pour lier la session avec les 4 feux */}
             <CommentSection videoId={video.id} user={user} />
           </div>
         </div>
@@ -152,4 +152,4 @@ export default function VideoFeed({ videos, user }) {
       ))}
     </div>
   )
-}
+            }
