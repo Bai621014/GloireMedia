@@ -1,4 +1,3 @@
-# render.yaml
 services:
   - type: web
     name: gloiremedia-v10
@@ -9,6 +8,10 @@ services:
       - key: NODE_ENV
         value: production
       - key: NEXT_PUBLIC_SUPABASE_URL
-        value: https://placeholder-project.supabase.co
+        value: https://sshwabalnigrkazgzopr.supabase.co
       - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
-        generateValue: true # À remplacer par ta clé réelle dans le dashboard Render
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzaHdhYmFsbmlncmthemd6b3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzUyNjEsImV4cCI6MjA5NzQ1MTI2MX0.lqfEtWFVl4y4N1WfVwsCqdT3OHljZ5LkBMpEaa52QNQ
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzaHdhYmFsbmlncmthemd6b3ByIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTg3NTI2MSwiZXhwIjoyMDk3NDUxMjYxfQ.0X3-Qg6-t0kgcpXJxEYhG9OEB69RV8H2hP9DunS4HOs
+      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        value: sb_publishable_xkTIYEQWOdcXKtlK5NKBHA_9EOFGHkC
