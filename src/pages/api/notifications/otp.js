@@ -1,90 +1,55 @@
-// CORRECTION : "const" en minuscule
-const { envoyerOTP } = require('../../../services/sendSMS');
-
-// Stockage temporaire sécurisé en mémoire
-const otpStore = new Map();
+import { SPIRITUAL_NOTIFICATIONS } from '../../../utils/notifications';
+import { sendSmsNotification } from '../../../services/infobip';
 
 export default async function handler(req, res) {
+  // 1. Vérification de la méthode
   if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).json({ success: false, message: `Method ${req.method} Not Allowed` });
+    return res.status(405).json({ error: 'Méthode non autorisée' });
   }
 
-  const { action, numero, code } = req.body;
+  const { type, users } = req.body; 
 
-  if (!numero) {
-    return res.status(400).json({ success: false, message: 'Numéro de téléphone manquant' });
+  // 2. Vérification basique
+  if (!type || !users || !Array.isArray(users)) {
+    return res.status(400).json({ error: 'Données invalides : type et liste d\'utilisateurs requis.' });
   }
 
-  // Nettoyage des espaces et formatage strict pour le Tchad (+235)
-  let formattedNumero = numero.replace(/\s+/g, '');
-  if (formattedNumero.startsWith('0')) formattedNumero = '+235' + formattedNumero.slice(1);
-  if (!formattedNumero.startsWith('+235')) formattedNumero = '+235' + formattedNumero;
+  if (!SPIRITUAL_NOTIFICATIONS[type]) {
+    return res.status(400).json({ error: 'Type de notification invalide' });
+  }
 
-  // ==========================================
-  // 1. ACTION : DEMANDE D'ENVOI DU CODE OTP
-  // ==========================================
-  if (action === 'send') {
-    // Anti-Spam : Limite d'un SMS par minute
-    if (otpStore.has(formattedNumero)) {
-      const last = otpStore.get(formattedNumero);
-      if (Date.now() - last.time < 60000) {
-        return res.json({ success: false, message: 'Veuillez attendre 60 secondes avant de renvoyer un code.' });
+  try {
+    // 3. Diffusion des messages avec gestion de sécurité
+    const results = { success: 0, failed: 0 };
+
+    for (const user of users) {
+      // Sécurité : on vérifie que l'utilisateur possède un numéro avant de lancer l'envoi
+      if (!user.phoneNumber) {
+        results.failed++;
+        continue;
+      }
+
+      try {
+        const userLang = user.language?.toLowerCase() || 'fr';
+        // Fallback sur le français si la langue n'existe pas
+        const message = SPIRITUAL_NOTIFICATIONS[type][userLang] || SPIRITUAL_NOTIFICATIONS[type]['fr'];
+        const fullMessage = `${message} Rejoignez le direct ici : https://healingstreams.tv/zone/ewcavz4`;
+
+        await sendSmsNotification(user.phoneNumber, fullMessage);
+        results.success++;
+      } catch (err) {
+        console.error(`Erreur envoi pour ${user.phoneNumber}:`, err.message);
+        results.failed++;
       }
     }
 
-    // Génération d'un code aléatoire à 4 chiffres
-    const generatedCode = Math.floor(1000 + Math.random() * 9000);
-    
-    // Sauvegarde avec expiration (5 minutes) et horodatage de sécurité
-    otpStore.set(formattedNumero, { 
-      code: generatedCode, 
-      exp: Date.now() + 300000, 
-      time: Date.now() 
+    return res.status(200).json({ 
+      success: true, 
+      message: 'Diffusion terminée.', 
+      details: results 
     });
-
-    // Appel du service Infobip
-    const ok = await envoyerOTP(formattedNumero, generatedCode);
-    
-    if (ok) {
-      // Nettoyage automatique de la mémoire après 5 minutes
-      setTimeout(() => otpStore.delete(formattedNumero), 300000);
-      return res.json({ success: true, message: 'Code OTP envoyé avec succès.' });
-    } else {
-      otpStore.delete(formattedNumero);
-      return res.status(500).json({ success: false, message: 'Erreur lors de l\'envoi du SMS via Infobip.' });
-    }
+  } catch (error) {
+    console.error('Erreur globale lors de la diffusion:', error);
+    return res.status(500).json({ error: 'Échec critique du processus de diffusion.' });
   }
-
-  // ==========================================
-  // 2. ACTION : VÉRIFICATION DU CODE OTP
-  // ==========================================
-  if (action === 'verify') {
-    if (!code) {
-      return res.status(400).json({ success: false, message: 'Code de vérification manquant.' });
-    }
-
-    const stored = otpStore.get(formattedNumero);
-
-    // Vérification de l'existence et de l'expiration du code
-    if (!stored) {
-      return res.json({ success: false, message: 'Code inexistant ou expiré.' });
-    }
-    
-    if (Date.now() > stored.exp) {
-      otpStore.delete(formattedNumero);
-      return res.json({ success: false, message: 'Le code a expiré.' });
-    }
-
-    // Vérification de la validité du code saisi
-    if (stored.code != code) {
-      return res.json({ success: false, message: 'Code incorrect.' });
-    }
-
-    // Code valide : On le supprime pour éviter une réutilisation frauduleuse
-    otpStore.delete(formattedNumero);
-    return res.json({ success: true, message: 'Numéro vérifié avec succès !' });
-  }
-
-  return res.status(400).json({ success: false, message: 'Action non reconnue.' });
 }
