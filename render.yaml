@@ -1,9 +1,14 @@
+# render.yaml
 services:
   - type: web
-    name: gloiremedia
+    name: gloiremedia-v10
     env: node
     buildCommand: npm install && npm run build
     startCommand: npm start
     envVars:
-      - key: NODE_VERSION
-        value: 18.x
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: https://placeholder-project.supabase.co
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        generateValue: true # À remplacer par ta clé réelle dans le dashboard Render
