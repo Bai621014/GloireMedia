@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
-import supabase from '../../../lib/supabase' // Chemin d'importation corrigé à 3 niveaux
+// 🎯 HARMONISATION : Import depuis config/supabase pour être cohérent avec le reste
+import supabase from '../../config/supabase' 
 
 export default function Market() {
   const [ads, setAds] = useState([])
@@ -8,7 +9,8 @@ export default function Market() {
 
   useEffect(() => {
     async function loadAds() {
-      // Chargement des annonces et publicités actives de la communauté
+      if (!supabase) return; // Sécurité ajoutée
+      
       const { data, error } = await supabase
         .from('marketplace_ads')
         .select('*')
@@ -25,16 +27,14 @@ export default function Market() {
 
   return (
     <div className="p-4 bg-black text-white min-h-screen pb-24 max-w-md mx-auto">
-      {/* En-tête de la boutique */}
       <h1 className="text-2xl font-bold text-yellow-400 mb-1">🛍️ Espace Publicitaire & Ventes</h1>
-      <p className="text-xs text-gray-400 mb-6">Utilisez vos commissions accumulées comme carburant pour booster vos affaires ou acquérir des offres.</p>
+      <p className="text-xs text-gray-400 mb-6">Utilisez vos commissions accumulées comme carburant pour booster vos affaires.</p>
 
-      {/* Affichage des annonces en grille responsive mobile */}
       {loading ? (
         <div className="text-center text-gray-500 text-sm py-10">Mise à jour de la boutique...</div>
       ) : ads.length === 0 ? (
         <div className="text-center text-gray-500 text-sm py-10 px-4">
-          Aucune publicité ou produit disponible actuellement. Revenez très bientôt !
+          Aucune publicité disponible actuellement. Revenez bientôt !
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
@@ -54,7 +54,7 @@ export default function Market() {
                 <span className="text-xs text-green-400 font-bold block mb-2">
                   💰 {ad.price_tokens} Commissions V10
                 </span>
-                <button className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-xs py-2 rounded-lg transition-colors scale-activate">
+                <button className="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-xs py-2 rounded-lg transition-colors">
                   Voir l'offre
                 </button>
               </div>
