@@ -1,3 +1,4 @@
+// CORRECTION : "const" en minuscule
 const { envoyerOTP } = require('../../../services/sendSMS');
 
 // Stockage temporaire sécurisé en mémoire
@@ -86,4 +87,4 @@ export default async function handler(req, res) {
   }
 
   return res.status(400).json({ success: false, message: 'Action non reconnue.' });
-          }
+}
