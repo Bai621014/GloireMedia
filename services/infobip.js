@@ -1,39 +1,47 @@
 import axios from 'axios';
 
-export async function sendSmsNotification(phoneNumber, message) {
-  const url = process.env.INFOBIP_URL || "http://jrwjyk.api.infobip.com";
-  const apiKey = process.env.INFOBIP_API_KEY;
-  const sender = process.env.INFOBIP_SENDER || "GloireMedia";
+// Création d'une instance avec configuration persistante pour gagner en performance
+const infobipClient = axios.create({
+  baseURL: process.env.INFOBIP_URL || "https://jrwjyk.api.infobip.com",
+  timeout: 5000, // Timeout de 5 secondes pour ne pas bloquer votre app
+  headers: {
+    'Authorization': `App ${process.env.INFOBIP_API_KEY}`,
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  }
+});
 
-  if (!apiKey) {
-    console.error("Clé API Infobip manquante dans les variables d'environnement.");
-    throw new Error("Configuration SMS manquante.");
+/**
+ * Envoie un SMS via Infobip de manière synchrone.
+ */
+export async function sendSmsNotification(phoneNumber, message) {
+  // 1. Validation rapide des entrées
+  if (!process.env.INFOBIP_API_KEY) {
+    throw new Error("Configuration SMS manquante : API Key absente.");
+  }
+  if (!phoneNumber || !message) {
+    throw new Error("Paramètres invalides : numéro ou message manquant.");
   }
 
   try {
-    const response = await axios.post(
-      `${url}/sms/2/text/advanced`,
-      {
-        messages: [
-          {
-            destinations: [{ to: phoneNumber }],
-            from: sender,
-            text: message,
-          },
-        ],
-      },
-      {
-        headers: {
-          Authorization: `App ${apiKey}`,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
+    // 2. Appel API avec l'instance optimisée
+    const response = await infobipClient.post('/sms/2/text/advanced', {
+      messages: [
+        {
+          destinations: [{ to: phoneNumber }],
+          from: process.env.INFOBIP_SENDER || "GloireMedia",
+          text: message,
         },
-      }
-    );
+      ],
+    });
 
     return response.data;
   } catch (error) {
-    console.error("Erreur lors de l'envoi du SMS via Infobip:", error.response?.data || error.message);
-    throw error;
+    // 3. Gestion d'erreur détaillée pour le diagnostic
+    const errorMessage = error.response?.data?.requestError?.serviceException?.text || error.message;
+    console.error(`Erreur lors de l'envoi du SMS à ${phoneNumber}:`, errorMessage);
+    
+    // On propage l'erreur pour que l'appelant puisse décider de la suite
+    throw new Error(`Échec envoi SMS: ${errorMessage}`);
   }
 }
