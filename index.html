@@ -10,7 +10,10 @@
 <body>
     <nav class="navbar">
         <div class="logo">GloireMedia</div>
-        <button id="upload_widget" class="upload-btn">📷 + Publier (Vidéo/Photo)</button>
+        <div class="nav-actions">
+            <button id="upload_widget" class="upload-btn">📷 + Publier</button>
+            <button class="prod-btn" onclick="alert('Module de production activé')">🎥 Production</button>
+        </div>
     </nav>
 
     <main>
@@ -27,16 +30,24 @@
     </main>
 
     <script>
-        // Configuration Cloudinary
         var myWidget = cloudinary.createUploadWidget({
             cloudName: 'dvoya2e3o',
             uploadPreset: 'gloiremedia_unsigned'
         }, (error, result) => {
             if (!error && result && result.event === "success") {
-                console.log('Fichier uploadé :', result.info.secure_url);
-                // Ajouter automatiquement à la grille
                 const grid = document.getElementById('grid');
-                grid.innerHTML += `<div class="video-card"><h3>Nouvelle publication</h3><img src="${result.info.secure_url}" width="100%"></div>`;
+                const fileUrl = result.info.secure_url;
+                const isVideo = result.info.resource_type === 'video';
+                
+                let content = isVideo ? 
+                    `<video width="100%" controls><source src="${fileUrl}" type="video/mp4"></video>` : 
+                    `<img src="${fileUrl}" width="100%">`;
+
+                grid.innerHTML += `
+                    <div class="video-card">
+                        ${content}
+                        <h3>Nouvelle Publication</h3>
+                    </div>`;
             }
         });
 
