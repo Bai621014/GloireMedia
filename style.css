@@ -1,17 +1,54 @@
-/* Style Général */
-body { font-family: sans-serif; background-color: #0f172a; color: white; margin: 0; }
+/* Amélioration du design pour un rendu Studio Pro */
+:root {
+    --gold: #eab308;
+    --dark-bg: #0f172a;
+    --card-bg: #1e293b;
+}
 
-/* Section Live */
-.live-container { max-width: 900px; margin: 2rem auto; padding: 20px; }
-.live-header { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-.live-indicator { background: #ef4444; color: white; padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 0.8rem; }
+body { font-family: 'Inter', sans-serif; background-color: var(--dark-bg); color: white; margin: 0; line-height: 1.5; }
 
-/* Vidéo plein écran */
-.video-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; }
-.video-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+/* Flux Live avec effet "cinéma" */
+.live-container { max-width: 950px; margin: 2rem auto; padding: 20px; }
+.video-wrapper { 
+    position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; 
+    border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+    border: 1px solid #334155; 
+}
 
-/* Notification & Dashboard */
-.notification-text { margin-top: 10px; font-size: 0.9rem; color: #94a3b8; text-align: center; }
-.wallet-card { background: #1e293b; padding: 2rem; border-radius: 20px; text-align: center; margin: 2rem auto; max-width: 600px; }
-.balance-display { font-size: 2rem; margin: 1rem 0; }
-.withdraw-btn { background: #eab308; color: #0f172a; padding: 12px 30px; border-radius: 50px; font-weight: bold; width: 100%; }
+/* Grille Vidéo Innovante */
+.video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 2rem;
+}
+
+.video-card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #334155;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer;
+}
+
+.video-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--gold);
+    box-shadow: 0 10px 30px rgba(234, 179, 8, 0.2);
+}
+
+/* Boutons et éléments financiers */
+.withdraw-btn { 
+    background: var(--gold); color: #0f172a; border: none; 
+    padding: 15px 30px; border-radius: 12px; font-weight: 800; 
+    width: 100%; transition: opacity 0.3s; 
+}
+.withdraw-btn:hover { opacity: 0.9; }
+
+/* Indicateur Live ultra pro */
+.live-indicator { 
+    background: linear-gradient(to right, #ef4444, #b91c1c);
+    color: white; padding: 6px 14px; border-radius: 50px; 
+    font-weight: bold; font-size: 0.75rem; letter-spacing: 1px;
+  }
