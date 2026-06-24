@@ -1,7 +1,10 @@
-export default function UserProfile() {
-  return (
-    <div style={{ padding: "50px", color: "blue", fontSize: "30px" }}>
-      Test d'affichage réussi !
-    </div>
-  );
-}
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import UserProfile from './UserProfile';
+import './style.css';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <UserProfile />
+  </React.StrictMode>
+);
