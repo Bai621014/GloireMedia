@@ -1,0 +1,22 @@
+# Dépendances Node.js
+node_modules/
+package-lock.json
+npm-debug.log
+
+# Variables d'environnement (TRÈS IMPORTANT)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Dossiers de build (générés par Vite)
+dist/
+dist-ssr/
+
+# Logs et fichiers système
+logs/
+*.log
+.DS_Store
+.vscode/
+.idea/
