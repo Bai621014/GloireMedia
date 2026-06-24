@@ -1,15 +1,16 @@
+/* Force le fond à être sombre pour voir le texte */
 body {
-  background-color: #0f172a; /* Bleu nuit très sombre */
-  color: white;
+  background-color: #111827 !important; 
   margin: 0;
-  font-family: sans-serif;
+  padding: 0;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+/* Force l'affichage du conteneur root */
 #root {
   width: 100%;
-  max-width: 400px;
+  display: block;
 }
