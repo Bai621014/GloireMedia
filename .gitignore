@@ -21,7 +21,3 @@ logs/
 .vscode/
 .idea/
 *.local
-git rm -r --cached .
-git add .
-git commit -m "Nettoyage : application du fichier gitignore et suppression des fichiers inutiles"
-git push
