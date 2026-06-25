@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// CORRECTION : Vite utilise import.meta.env pour les variables d'environnement
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL, 
-  import.meta.env.VITE_SUPABASE_ANON_KEY
-);
+// Initialisation sécurisée
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+const supabase = createClient(supabaseUrl || "", supabaseAnonKey || "");
 
 export default function UserProfile() {
   const [balance] = useState(500);
@@ -14,6 +14,11 @@ export default function UserProfile() {
   const amountToWithdraw = 50000;
 
   const handleWithdraw = async () => {
+    if (!supabaseUrl || !supabaseAnonKey) {
+      alert("Erreur : Clés API Supabase manquantes dans Render.");
+      return;
+    }
+
     const { error } = await supabase
       .from('withdrawals')
       .insert([
