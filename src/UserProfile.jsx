@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialisation sécurisée via les variables d'environnement de Render
+// CORRECTION : Vite utilise import.meta.env pour les variables d'environnement
 const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL, 
-  process.env.REACT_APP_SUPABASE_ANON_KEY
+  import.meta.env.VITE_SUPABASE_URL, 
+  import.meta.env.VITE_SUPABASE_ANON_KEY
 );
 
 export default function UserProfile() {
@@ -53,4 +53,4 @@ export default function UserProfile() {
       </button>
     </div>
   );
-}
+      }
