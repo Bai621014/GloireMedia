@@ -1,51 +1,60 @@
-import { useState, useEffect } from 'react';
-import { supabase } from './lib/supabase';
+import { useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
-export default function UserProfile({ initialBalance = 0 }) {
-  const [balance, setBalance] = useState(initialBalance);
-  const [loading, setLoading] = useState(false);
-  const [rate] = useState(100); // 1 GC = 100 FCFA
+// Initialisation sécurisée via les variables d'environnement
+const supabase = createClient(
+  process.env.REACT_APP_SUPABASE_URL, 
+  process.env.REACT_APP_SUPABASE_ANON_KEY
+);
 
-  // Calcul dynamique de la valeur
-  const amountFcfa = (balance * rate).toLocaleString();
+export default function UserProfile() {
+  const [balance] = useState(500);
+  const rate = 100;
+  const phoneNumber = "+235 62 10 14 68";
+  const amountToWithdraw = 50000;
 
   const handleWithdraw = async () => {
-    setLoading(true);
-    try {
-      // Simulation de l'appel pour le retrait
-      alert(`Demande de retrait de ${amountFcfa} FCFA envoyée avec succès.`);
-    } catch (error) {
-      console.error("Erreur lors du retrait :", error);
-    } finally {
-      setLoading(false);
+    // Insertion dans la base de données
+    const { error } = await supabase
+      .from('withdrawals')
+      .insert([
+        { 
+          amount: amountToWithdraw, 
+          phone: phoneNumber, 
+          status: 'pending' 
+        },
+      ]);
+
+    if (error) {
+      alert("Erreur lors de l'envoi : " + error.message);
+    } else {
+      alert("Demande de " + amountToWithdraw.toLocaleString() + " FCFA enregistrée avec succès pour le " + phoneNumber);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-8 bg-black border border-emerald-500 rounded-2xl text-white shadow-2xl">
-      <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 mb-6">
-        GloireMedia Wallet
-      </h2>
+    <div style={{ backgroundColor: '#030712', color: '#ffffff', minHeight: '100vh', padding: '20px', fontFamily: 'sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <h1 style={{ marginBottom: '30px' }}>GLOIREMEDIA</h1>
       
-      <div className="space-y-4">
-        <div className="bg-gray-900 p-4 rounded-xl border border-gray-800">
-          <p className="text-gray-400 text-sm">Solde GloireCoin</p>
-          <p className="text-4xl font-mono font-bold text-white">{balance} GC</p>
-        </div>
-
-        <div className="bg-emerald-900/20 p-4 rounded-xl border border-emerald-900">
-          <p className="text-emerald-400 text-sm">Valeur estimée</p>
-          <p className="text-3xl font-bold text-emerald-400">{amountFcfa} FCFA</p>
-        </div>
+      {/* Affichage du solde */}
+      <div style={{ background: '#1e293b', padding: '20px', borderRadius: '20px', width: '100%', maxWidth: '300px', textAlign: 'center', marginBottom: '20px' }}>
+        <p style={{ color: '#94a3b8' }}>Solde actuel :</p>
+        <h2 style={{ fontSize: '2.5em', color: '#22c55e' }}>{balance} GC</h2>
       </div>
 
+      {/* Affichage de la valeur en FCFA */}
+      <div style={{ background: '#1e293b', padding: '15px', borderRadius: '20px', width: '100%', maxWidth: '300px', textAlign: 'center', marginBottom: '30px' }}>
+        <p style={{ color: '#94a3b8' }}>Valeur en FCFA :</p>
+        <h2 style={{ fontSize: '2em', color: '#ffffff' }}>{(balance * rate).toLocaleString()} FCFA</h2>
+      </div>
+
+      {/* Bouton de retrait */}
       <button 
-        onClick={handleWithdraw}
-        disabled={loading}
-        className="w-full mt-8 py-4 bg-emerald-600 hover:bg-emerald-500 transition-all font-bold rounded-xl uppercase tracking-widest text-sm"
+        onClick={handleWithdraw} 
+        style={{ width: '100%', maxWidth: '300px', padding: '15px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '15px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer' }}
       >
-        {loading ? 'Traitement...' : 'Retirer vers Airtel Money'}
+        Retrait Airtel {phoneNumber}
       </button>
     </div>
   );
-}
+                }
