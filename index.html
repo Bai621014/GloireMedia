@@ -35,10 +35,11 @@
     
     <div id="authBox">
       <label>Email</label>
-      <input id="email" type="email" placeholder="ton@email.com" value="eduboostgrace@gmail.com" autocomplete="email">  <!-- CHANGÉ ICI -->
+      <input id="email" type="email" placeholder="ton@email.com" autocomplete="email">
       <label>Mot de passe</label>
       <input id="password" type="password" placeholder="******" autocomplete="current-password">
       <button id="loginBtn">Se connecter</button>
+      <button id="signupBtn" style="background:#334155; color:var(--text);">Créer un compte</button>
     </div>
 
     <div id="retraitBox" style="display:none;">
@@ -56,7 +57,7 @@
       <div class="info">Taux: 1 GC = 100 FCFA. Montant multiple de 100.</div>
       
       <label>Numéro Airtel TD</label>
-      <input id="phone" type="tel" placeholder="62101468" value="62101468" inputmode="tel">
+      <input id="phone" type="tel" placeholder="62101468" inputmode="tel">
       <div class="info">Sans +235, sans espace</div>
 
       <button id="retirerBtn">Retirer</button>
@@ -73,7 +74,7 @@
   </div>
 
   <script>
-    // === CONFIG SUPABASE OFFICIELLE === 20H542
+    // === CONFIG SUPABASE OFFICIELLE === 20H650
     const SUPABASE_URL = 'https://sshwabalnigrkazgzopr.supabase.co' 
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzaHdhYmFsbmlncmthemd6b3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzUyNjEsImV4cCI6MjA5NzQ1MTI2MX0.lqfEtWFVl4y4N1WfVwsCqdT3OHljZ5LkBMpEaa52QNQ' 
     const PLAFOND_JOUR = 500000;
@@ -88,6 +89,25 @@
       setTimeout(() => alertBox.className = 'alert', 5000);
     }
 
+    // Auto-login si session existe
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (session) loadUI();
+      else {
+        document.getElementById('authBox').style.display = 'block'; 
+        document.getElementById('retraitBox').style.display = 'none'; 
+        document.getElementById('loginBtn').disabled = false;
+      }
+    });
+
+    document.getElementById('signupBtn').onclick = async () => {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      if(!email || !password) { showAlert('Email + MDP requis', 'err'); return; }
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) showAlert('Erreur: ' + error.message, 'err');
+      else showAlert('Compte créé. Connecte-toi.', 'ok');
+    }
+
     document.getElementById('loginBtn').onclick = async () => {
       const btn = document.getElementById('loginBtn');
       btn.disabled = true;
@@ -97,22 +117,16 @@
       
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) { showAlert('Erreur: ' + error.message, 'err'); btn.disabled = false; return; }
-      loadUI();
+      // loadUI() sera appelé par onAuthStateChange
     }
 
     document.getElementById('logoutBtn').onclick = async () => {
       await supabase.auth.signOut();
-      location.reload();
     }
 
     async function loadUI() {
-      const { data: { user }, error: userError } = await supabase.auth.getUser(); // <-- BUG FIX ICI
-      if (userError || !user) { 
-        document.getElementById('authBox').style.display = 'block'; 
-        document.getElementById('retraitBox').style.display = 'none'; 
-        document.getElementById('loginBtn').disabled = false;
-        return; 
-      }
+      const { data: { user } = await supabase.auth.getUser();
+      if (!user) return;
 
       document.getElementById('authBox').style.display = 'none';
       document.getElementById('retraitBox').style.display = 'block';
@@ -174,7 +188,7 @@
       btn.textContent = 'Retirer';
     }
 
-    loadUI();
+    loadUI(); // Charge au démarrage
   </script>
 </body>
 </html>
