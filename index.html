@@ -1,13 +1,126 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="GloireMedia - Plateforme de gestion GloireCoin et conversion en FCFA." />
-    <title>GloireMedia | GloireCoin & Services</title>
-    </head>
-  <body style="margin: 0; padding: 0; font-family: sans-serif; background-color: #f4f4f4;">
-    <div id="root"></div> 
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GloireMedia - Retrait</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root { --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --accent: #22c55e; --danger: #ef4444; }
+    body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+    .card { background: var(--card); padding: 24px; border-radius: 16px; width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    h1 { font-size: 20px; margin: 0 0 16px; text-align: center; }
+    label { font-size: 14px; opacity: 0.8; display: block; margin-bottom: 6px; }
+    input, button { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0b1220; color: var(--text); font-size: 16px; box-sizing: border-box; }
+    input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+    button { background: var(--accent); color: #0f172a; font-weight: 700; border: none; cursor: pointer; margin-top: 12px; }
+    button:disabled { background: #475569; cursor: not-allowed; }
+    .info { font-size: 13px; opacity: 0.7; margin-top: 8px; text-align: center; }
+    .alert { margin-top: 12px; padding: 12px; border-radius: 10px; font-size: 14px; display: none; }
+    .alert.ok { background: rgba(34,197,94,0.1); border: 1px solid var(--accent); display: block; }
+    .alert.err { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); display: block; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Retrait Airtel Money TD</h1>
+    
+    <div id="authBox">
+      <label>Email</label>
+      <input id="email" type="email" placeholder="ton@email.com">
+      <label>Mot de passe</label>
+      <input id="password" type="password" placeholder="******">
+      <button id="loginBtn">Se connecter</button>
+    </div>
+
+    <div id="retraitBox" style="display:none;">
+      <label>Solde: <span id="soldeGC">0</span> GC</label>
+      <label>Montant FCFA</label>
+      <input id="amount_fcfa" type="number" value="50000" min="50000" step="100">
+      <div class="info">Taux: 1 GC = 100 FCFA. Donc 500 GC = 50 000 FCFA</div>
+      
+      <label>Numéro Airtel TD</label>
+      <input id="phone" type="tel" placeholder="62101468" value="62101468">
+      <div class="info">Sans +235 ni espace</div>
+
+      <button id="retirerBtn">Retirer 50 000 FCFA</button>
+      <button id="logoutBtn" style="background:#334155; color:var(--text); margin-top:8px;">Déconnexion</button>
+    </div>
+
+    <div id="alert" class="alert"></div>
+  </div>
+
+  <script>
+    // 1. CONFIG SUPABASE
+    const SUPABASE_URL = 'https://TON-PROJET.supabase.co' // <- REMPLACE
+    const SUPABASE_ANON_KEY = 'TON-ANON-KEY' // <- REMPLACE
+    
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 2. ELEMENTS DOM
+    const authBox = document.getElementById('authBox');
+    const retraitBox = document.getElementById('retraitBox');
+    const soldeGC = document.getElementById('soldeGC');
+    const alertBox = document.getElementById('alert');
+
+    const showAlert = (msg, type) => {
+      alertBox.textContent = msg;
+      alertBox.className = `alert ${type}`;
+      setTimeout(() => alertBox.className = 'alert', 5000);
+    }
+
+    // 3. AUTH
+    document.getElementById('loginBtn').onclick = async () => {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+      });
+      if (error) return showAlert(error.message, 'err');
+      loadUI();
+    }
+
+    document.getElementById('logoutBtn').onclick = async () => {
+      await supabase.auth.signOut();
+      location.reload();
+    }
+
+    // 4. CHARGER SOLDE
+    async function loadUI() {
+      const { data: { user } = await supabase.auth.getUser();
+      if (!user) { authBox.style.display = 'block'; retraitBox.style.display = 'none'; return; }
+
+      authBox.style.display = 'none';
+      retraitBox.style.display = 'block';
+
+      const { data: wallet } = await supabase.from('wallets').select('gloirecoin').eq('user_id', user.id).single();
+      soldeGC.textContent = wallet?.gloirecoin || 0;
+    }
+
+    // 5. LANCER RETRAIT
+    document.getElementById('retirerBtn').onclick = async () => {
+      const btn = document.getElementById('retirerBtn');
+      btn.disabled = true;
+      btn.textContent = 'Envoi en cours...';
+
+      const amount_fcfa = parseInt(document.getElementById('amount_fcfa').value);
+      const phone = document.getElementById('phone').value;
+
+      const { data, error } = await supabase.functions.invoke('effectuer-retrait', {
+        body: { amount_fcfa, phone }
+      });
+
+      if (error || !data?.success) {
+        showAlert(error?.message || data?.message || 'Erreur', 'err');
+      } else {
+        showAlert(data.message, 'ok');
+        loadUI(); // recharge le solde
+      }
+      
+      btn.disabled = false;
+      btn.textContent = 'Retirer 50 000 FCFA';
+    }
+
+    loadUI();
+  </script>
+</body>
 </html>
