@@ -72,9 +72,9 @@
   </div>
 
   <script>
-    // CONFIG: REMPLACE ICI
-    const SUPABASE_URL = 'https://TON-PROJET.supabase.co' 
-    const SUPABASE_ANON_KEY = 'TON-ANON-KEY' 
+    // CONFIG: CLÉS PUBLIQUES UNIQUEMENT
+    const SUPABASE_URL = 'https://sshwabalnigrkazgzopr.supabase.co' 
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzaHdhYmFsbmlncmthemd6b3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzUyNjEsImV4cCI6MjA5NzQ1MTI2MX0.lqfEtWFVl4y4N1WfVwsCqdT3OHljZ5LkBMpEaa52QNQ' 
     const PLAFOND_JOUR = 500000;
     const TAUX = 100;
     
@@ -113,15 +113,13 @@
       document.getElementById('soldeGC').textContent = gc.toLocaleString('fr-FR');
       document.getElementById('soldeFCFA').textContent = (gc * TAUX).toLocaleString('fr-FR');
 
-      // Plafond jour TZ Afrique/N'Djamena
-      const todayStart = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Ndjamena' }); // YYYY-MM-DD
+      const todayStart = new Date().toLocaleDateString('en-CA', { timeZone: 'Africa/Ndjamena' });
       const { data: retraitsJour } = await supabase.from('retraits')
         .select('amount_fcfa').eq('user_id', user.id).eq('statut', 'paye')
         .gte('created_at', `${todayStart}T00:00:00+01:00`);
       const totalJour = retraitsJour?.reduce((s, r) => s + r.amount_fcfa, 0) || 0;
       document.getElementById('retireAuj').textContent = totalJour.toLocaleString('fr-FR');
 
-      // Historique
       const { data: histo } = await supabase.from('retraits')
         .select('amount_fcfa, statut, created_at').eq('user_id', user.id)
         .order('created_at', { ascending: false }).limit(10);
@@ -170,4 +168,4 @@
     loadUI();
   </script>
 </body>
-</html>
+  </html>
