@@ -1,2 +1,10 @@
-body { margin: 0; padding: 0; background-color: #030712; }
-#root { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import './index.css'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+)
