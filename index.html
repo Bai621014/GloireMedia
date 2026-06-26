@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GloireMedia - Retrait Airtel TD</title>
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script> <!-- CHANGÉ CDN -->
   <style>
     :root { --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --accent: #22c55e; --danger: #ef4444; }
     body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; margin: 0; min-height: 100vh; align-items: center; }
@@ -16,14 +15,15 @@
     button:disabled { background: #475569; }
     .alert { margin-top: 12px; padding: 12px; border-radius: 10px; font-size: 14px; display: none; }
     .alert.err { background: rgba(239,68,68,0.1); border: 1px solid var(--danger); display: block; }
+    .alert.ok { background: rgba(34,197,94,0.1); border: 1px solid var(--accent); display: block; }
   </style>
 </head>
 <body>
   <div class="card">
     <h1>Retrait Airtel Money TD</h1>
     <div id="authBox">
-      <label>Email</label><input id="email" type="email" placeholder="ton@email.com">
-      <label>Mot de passe</label><input id="password" type="password" placeholder="******">
+      <label>Email</label><input id="email" type="email" value="eduboostgrace@gmail.com">
+      <label>Mot de passe</label><input id="password" type="password">
       <button id="signupBtn" style="background:#334155;">Créer un compte</button>
       <button id="loginBtn">Se connecter</button>
     </div>
@@ -31,43 +31,41 @@
     <div id="alert" class="alert"></div>
   </div>
 
-  <script>
-    const SUPABASE_URL = 'https://sshwabalnigrkazgzopr.supabase.co' 
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzaHdhYmFsbmlncmthemd6b3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzUyNjEsImV4cCI6MjA5NzQ1MTI2MX0.lqfEtWFVl4y4N1WfVwsCqdT3OHljZ5LkBMpEaa52QNQ' 
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2' // ESM direct, pas de CDN
+
+  const SUPABASE_URL = 'https://sshwabalnigrkazgzopr.supabase.co' 
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzaHdhYmFsbmlncmthemd6b3ByIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4NzUyNjEsImV4cCI6MjA5NzQ1MTI2MX0.lqfEtWFVl4y4N1WfVwsCqdT3OHljZ5LkBMpEaa52QNQ' 
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  
+  const alertBox = document.getElementById('alert');
+  const showAlert = (msg, type = 'err') => {
+    alertBox.textContent = msg;
+    alertBox.className = `alert ${type}`;
+    alert(msg); // Force un pop-up sur Redmi pour voir l’erreur
+  }
+
+  document.getElementById('signupBtn').onclick = async () => {
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) showAlert('Créer compte: ' + error.message);
+    else showAlert('Compte créé. Connecte-toi.', 'ok');
+  }
+
+  document.getElementById('loginBtn').onclick = async () => {
+    const btn = document.getElementById('loginBtn');
+    btn.disabled = true;
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    btn.disabled = false;
+
+    if (error) { showAlert('Login: ' + error.message); return; }
     
-    const alertBox = document.getElementById('alert');
-    const showAlert = (msg, type = 'err') => {
-      alertBox.textContent = msg; // Affiche l'erreur direct
-      alertBox.className = `alert ${type}`;
-      console.log("SUPABASE ERROR:", msg); // Pour voir dans Chrome > ... > Outils Dev
-    }
-
-    // ATTENDS que supabase charge
-    if(typeof supabase === 'undefined'){ showAlert('Erreur: Supabase JS ne charge pas. Mauvais internet 0.06 Ko/s'); }
-    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    document.getElementById('signupBtn').onclick = async () => {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      const { error } = await client.auth.signUp({ email, password });
-      if (error) showAlert('Créer compte: ' + error.message);
-      else showAlert('Compte créé. Clique Se connecter.', 'ok');
-    }
-
-    document.getElementById('loginBtn').onclick = async () => {
-      const btn = document.getElementById('loginBtn');
-      btn.disabled = true;
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
-      
-      const { data, error } = await client.auth.signInWithPassword({ email, password });
-      btn.disabled = false; // Débloque toujours
-
-      if (error) { showAlert('Login: ' + error.message); return; }
-      
-      document.getElementById('authBox').style.display = 'none';
-      document.getElementById('retraitBox').style.display = 'block';
-    }
-  </script>
+    document.getElementById('authBox').style.display = 'none';
+    document.getElementById('retraitBox').style.display = 'block';
+  }
+</script>
 </body>
 </html>
